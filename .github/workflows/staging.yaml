@@ -22,7 +22,7 @@ jobs:
       - name: Setup ssh cloudflared config
         run: |
           mkdir -p ~/.ssh
-          printf "Host sshtransit03.catenarymaps.org\nProxyCommand /usr/bin/cloudflared access ssh --hostname %%h" > ~/.ssh/config
+          printf "Host sshstaging.lolpro11.me\nProxyCommand /usr/bin/cloudflared access ssh --hostname %%h" > ~/.ssh/config
           echo "${{ secrets.STAGING_SERVER }}" > ~/.ssh/known_hosts
         shell: bash
         
