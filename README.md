@@ -43,7 +43,7 @@ sudo pacman -S redis protobuf-compiler; sudo systemctl start redis-server;
 ```
 ubuntu:
 ```
-sudo apt install protobuf-compiler build-essential gcc pkg-config libssl-dev postgresql unzip wget
+sudo apt install protobuf-compiler build-essential gcc pkg-config libssl-dev postgresql unzip wget g++
 sudo systemctl start redis-server
 ```
 
