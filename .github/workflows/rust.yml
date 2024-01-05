@@ -17,6 +17,6 @@ jobs:
     - name: Install Dependencies
       run: sudo apt install protobuf-compiler redis
     - name: Build
-      run: cargo build
+      run: cargo build --verbose
     - name: Test
       run: cargo test --verbose -- --nocapture

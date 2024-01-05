@@ -387,7 +387,7 @@ async fn main() -> std::io::Result<()> {
     let builder = HttpServer::new(|| {
         App::new()
             .wrap(
-                DefaultHeaders::new()
+                DefaultHeaders::new()   
                     .add(("Server", "Kactus"))
                     .add(("Access-Control-Allow-Origin", "*"))
                     .add((
