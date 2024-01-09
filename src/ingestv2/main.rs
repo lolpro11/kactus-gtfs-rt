@@ -60,7 +60,7 @@ async fn main() -> color_eyre::eyre::Result<()> {
         None => 50,
     };
 
-    let file = File::open(filenametouse.clone()).expect(format!("File {} now found", filenametouse.clone()).as_str());
+    let file = File::open(filenametouse).unwrap();
     let mut reader = csv::Reader::from_reader(BufReader::new(file));
 
     let mut agencies: Vec<AgencyInfo> = Vec::new();
