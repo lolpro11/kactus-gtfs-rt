@@ -402,6 +402,11 @@ async fn gtfsrtws(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let port = arguments::parse(std::env::args())
+        .unwrap()
+        .get::<u16>("port")
+        .unwrap_or_else(|| 54105);
+
     let builder = HttpServer::new(|| {
         App::new()
             .wrap(
@@ -427,7 +432,7 @@ async fn main() -> std::io::Result<()> {
     })
     .workers(4);
 
-    let _ = builder.bind("127.0.0.1:54105").unwrap().run().await;
+    let _ = builder.bind(format!("127.0.0.1:{}", port)).unwrap().run().await;
 
     Ok(())
 }
