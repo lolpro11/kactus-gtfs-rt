@@ -352,7 +352,7 @@ dependencies = [
 [[package]]
 name = "amtrak-gtfs-rt"
 version = "0.1.16"
-source = "git+https://github.com/CatenaryMaps/amtrak-gtfs-rt#8e3b804a86a5391656e058d4acaeb29b23e49aa7"
+source = "git+https://github.com/CatenaryMaps/amtrak-gtfs-rt#f49f5c9950ec007708b86bb9960442cbbddd6010"
 dependencies = [
  "amtk",
  "amtrak-api",
@@ -362,7 +362,6 @@ dependencies = [
  "geojson",
  "gtfs-rt",
  "gtfs-structures",
- "openssl",
  "prost",
  "reqwest",
  "rust-crypto",
@@ -1588,7 +1587,7 @@ dependencies = [
  "httpdate",
  "itoa 1.0.10",
  "pin-project-lite",
- "socket2 0.5.5",
+ "socket2 0.4.10",
  "tokio 1.35.1",
  "tower-service",
  "tracing",
