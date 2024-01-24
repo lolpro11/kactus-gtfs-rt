@@ -422,7 +422,6 @@ async fn main() -> std::io::Result<()> {
                         "Server, hash, server, Hash",
                     )),
             )
-            .wrap(actix_block_ai_crawling::BlockAi)
             .wrap(middleware::Compress::default())
             .route("/", web::get().to(index))
             .route("/gtfsrt/", web::get().to(gtfsrt))

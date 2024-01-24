@@ -35,8 +35,8 @@ async fn main() {
             .unwrap();
 
         let vehicle_data =
-            filter_capital_corridor(amtrak_gtfs_rt.vehicle_positions).encode_to_vec();
-        let trip_data = filter_capital_corridor(amtrak_gtfs_rt.trip_updates).encode_to_vec();
+            filter_capital_corridor(amtrak_gtfs_rt.vehicle_positions).header.gtfs_realtime_version.encode_to_vec();
+        let trip_data = filter_capital_corridor(amtrak_gtfs_rt.trip_updates).header.gtfs_realtime_version.encode_to_vec();
 
         insert_gtfs_rt_bytes(
             &mut con,
