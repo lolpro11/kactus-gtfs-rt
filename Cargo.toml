@@ -13,7 +13,6 @@ non_ascii_idents = "deny"
 
 [dependencies]
 actix = "0.13.1"
-actix_block_ai_crawling = "0.2.8"
 actix-web = { git = "https://github.com/lolpro11/actix-web" }
 actix-web-actors = { git = "https://github.com/lolpro11/actix-web" }
 ahash = "0.8.7"
@@ -45,7 +44,7 @@ snailquote = "0.3.1"
 systemctl = "0.3.1"
 termion = "3.0.0"
 tokio = { version = "1.33", features = ["full"] }
-gtfs-structures = "0.39.1"
+gtfs-structures = { git = "https://github.com/lolpro11/gtfs-structure"}
 tokio-zookeeper = "0.2.1"
 
 [build]
