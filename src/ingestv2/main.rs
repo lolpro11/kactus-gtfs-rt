@@ -5,7 +5,6 @@ use reqwest::Client as ReqwestClient;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use termion::{color, style};
 extern crate color_eyre;
-use fasthash::metro;
 use kactus::parse_protobuf_message;
 extern crate rand;
 use crate::rand::prelude::SliceRandom;

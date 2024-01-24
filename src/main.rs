@@ -12,7 +12,7 @@ extern crate qstring;
 use kactus::parse_protobuf_message;
 use qstring::QString;
 use serde::Serialize;
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::{hash::Hasher, time::{Instant, SystemTime, UNIX_EPOCH}};
 
 pub struct GtfsWs {
     feed: String,
@@ -116,7 +116,11 @@ async fn gtfsrt(req: HttpRequest) -> impl Responder {
     let timeofclientcache = qs.get("timeofcache");
     let proto = parse_protobuf_message(&data);
     let hashofresult = match proto {
-        Ok(_) => fasthash::metro::hash64(data.as_slice()),
+        Ok(_) => {
+            let mut hasher = metrohash::MetroHash64::new();
+            hasher.write(data.as_slice());
+            hasher.finish()
+        },
         Err(_) => {
             let mut rng = rand::thread_rng();
             rng.gen::<u64>()
