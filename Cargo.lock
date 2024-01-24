@@ -337,7 +337,7 @@ dependencies = [
  "geojson",
  "gtfs-rt",
  "gtfs-structures",
- "prost 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost",
  "reqwest",
  "rust-crypto",
  "serde",
@@ -905,6 +905,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fastrand"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "25cbce373ec4653f1a01a31e8a5e5ec0c622dc27ff9c4e6606eefef5cbbed4a5"
+
+[[package]]
 name = "fixedbitset"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1090,18 +1096,18 @@ checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
 [[package]]
 name = "gtfs-rt"
 version = "0.4.0"
-source = "git+https://github.com/lolpro11/gtfs-rt#a0fe27d4e9d6a05d67983b8e1a1adb3d875c66ba"
+source = "git+https://github.com/lolpro11/gtfs-rt#f704d84103d0a38daf4962ae4d0d9660e11f501e"
 dependencies = [
- "prost 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost",
  "prost-build",
- "prost-derive 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost-derive",
  "serde",
 ]
 
 [[package]]
 name = "gtfs-structures"
 version = "0.39.1"
-source = "git+https://github.com/lolpro11/gtfs-structure#31a82a023d8c057c512f3e49d0e6c9080d8ccb3d"
+source = "git+https://github.com/lolpro11/gtfs-structure#c6d68b225e026921833c88c3e242649071e6688a"
 dependencies = [
  "bytes",
  "chrono",
@@ -1435,7 +1441,7 @@ dependencies = [
  "hyper 1.1.0",
  "lock_api",
  "metrohash",
- "prost 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost",
  "protobuf",
  "protobuf-json-mapping",
  "qstring",
@@ -1834,22 +1840,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "146c289cda302b98a28d40c8b3b90498d6e526dd24ac2ecea73e4e491685b94a"
 dependencies = [
  "bytes",
- "prost-derive 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "prost"
-version = "0.12.3"
-source = "git+https://github.com/lolpro11/prost-rs/#942ebe0e5c1aec073a5e3b07cfa556a37d776340"
-dependencies = [
- "bytes",
- "prost-derive 0.12.3 (git+https://github.com/lolpro11/prost-rs/)",
+ "prost-derive",
 ]
 
 [[package]]
 name = "prost-build"
 version = "0.12.3"
-source = "git+https://github.com/lolpro11/prost-rs/#942ebe0e5c1aec073a5e3b07cfa556a37d776340"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c55e02e35260070b6f716a2423c2ff1c3bb1642ddca6f99e1f26d06268a0e2d2"
 dependencies = [
  "bytes",
  "heck",
@@ -1859,10 +1857,11 @@ dependencies = [
  "once_cell",
  "petgraph",
  "prettyplease",
- "prost 0.12.3 (git+https://github.com/lolpro11/prost-rs/)",
+ "prost",
  "prost-types",
  "regex",
  "syn 2.0.48",
+ "tempfile",
  "which",
 ]
 
@@ -1880,23 +1879,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "prost-derive"
-version = "0.12.3"
-source = "git+https://github.com/lolpro11/prost-rs/#942ebe0e5c1aec073a5e3b07cfa556a37d776340"
-dependencies = [
- "anyhow",
- "itertools 0.11.0",
- "proc-macro2",
- "quote",
- "syn 2.0.48",
-]
-
-[[package]]
 name = "prost-types"
 version = "0.12.3"
-source = "git+https://github.com/lolpro11/prost-rs/#942ebe0e5c1aec073a5e3b07cfa556a37d776340"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "193898f59edcf43c26227dcd4c8427f00d99d61e95dcde58dabd49fa291d470e"
 dependencies = [
- "prost 0.12.3 (git+https://github.com/lolpro11/prost-rs/)",
+ "prost",
 ]
 
 [[package]]
@@ -2571,6 +2559,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "tempfile"
+version = "3.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "01ce4141aa927a6d1bd34a041795abd0db1cccba5d5f24b009f694bdf3a1f3fa"
+dependencies = [
+ "cfg-if",
+ "fastrand",
+ "redox_syscall",
+ "rustix",
+ "windows-sys 0.52.0",
+]
+
+[[package]]
 name = "termion"
 version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3185,4 +3186,5 @@ dependencies = [
  "byteorder",
  "crc32fast",
  "crossbeam-utils",
+ "flate2",
 ]
