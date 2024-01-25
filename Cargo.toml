@@ -18,7 +18,7 @@ actix-web-actors = "4.2.0"
 ahash = "0.8.7"
 amtrak-gtfs-rt = {git = "https://github.com/CatenaryMaps/amtrak-gtfs-rt"}
 arguments = "0.7"
-chrono = "0.4.32"
+chrono = "0.4.33"
 chrono-tz = "0.8.5"
 color-eyre = "0.6.2"
 csv = "1.3"
