@@ -22,13 +22,18 @@ fn get_epoch_ms() -> u128 {
 
 #[tokio::main]
 async fn main() {
-    let metrolink_key = fs::read_to_string("./metrolink-keys.txt")
+    let metrolink_key;
+
+    let arguments = arguments::parse(std::env::args()).unwrap();
+
+    if arguments.get::<String>("metrolink_key").is_none() {
+        metrolink_key = fs::read_to_string("./metrolink-keys.txt")
         .expect("Unable to read file metrolink-keys.txt")
         .trim()
         .to_string();
-
-    let arguments = std::env::args();
-    let _arguments = arguments::parse(arguments).unwrap();
+    } else {
+        metrolink_key = arguments.get("metrolink_key").unwrap();
+    }
 
     let client = reqwest::ClientBuilder::new()
         .deflate(true)
