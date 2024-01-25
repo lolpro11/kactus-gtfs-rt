@@ -434,7 +434,7 @@ async fn main() -> std::io::Result<()> {
             .route("/gtfsrtws", web::get().to(gtfsrtws))
     })
     .workers(4);
-
+    println!("Running on port: {}", port);
     let _ = builder.bind(format!("127.0.0.1:{}", port)).unwrap().run().await;
 
     Ok(())
