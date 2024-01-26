@@ -327,7 +327,7 @@ dependencies = [
 [[package]]
 name = "amtrak-gtfs-rt"
 version = "0.1.16"
-source = "git+https://github.com/CatenaryMaps/amtrak-gtfs-rt#e68006a2f6523b411323b96d56e41e3d984f4824"
+source = "git+https://github.com/CatenaryMaps/amtrak-gtfs-rt#4c14ddeb73b34541a6ab125a08d321404697fcdd"
 dependencies = [
  "amtk",
  "amtrak-api",
@@ -1271,7 +1271,7 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "socket2 0.5.5",
+ "socket2 0.4.10",
  "tokio",
  "tower-service",
  "tracing",
