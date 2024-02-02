@@ -43,7 +43,7 @@ serde_json = "1.0.113"
 snailquote = "0.3.1"
 systemctl = "0.3.1"
 termion = "3.0.0"
-tokio = { version = "1.33", features = ["full"] }
+tokio = { version = "1.36", features = ["full"] }
 gtfs-structures = { git = "https://github.com/lolpro11/gtfs-structure"}
 tokio-zookeeper = "0.2.1"
 
