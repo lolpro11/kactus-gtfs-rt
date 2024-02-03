@@ -12,7 +12,7 @@ non_ascii_idents = "deny"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix = "0.13.1"
+actix = "0.13.2"
 actix-web = { version = "4.4.1", default-features = false, features =  ["macros", "compress-brotli", "compress-gzip", "cookies", "http2"] }
 actix-web-actors = "4.2.0"
 ahash = "0.8.7"
@@ -37,14 +37,14 @@ rayon = "1.8.1"
 redis = { version = "0.24", features = ["streams"] }
 regex = "1.10.3"
 reqwest = {version = "0.11", default-features = false, features = ["gzip","brotli","rustls-tls","deflate"]}
-serde = "1.0.195"
+serde = "1.0.196"
 serde_derive = "1.0.192"
-serde_json = "1.0.111"
+serde_json = "1.0.113"
 snailquote = "0.3.1"
 systemctl = "0.3.1"
 termion = "3.0.0"
 tarpc = "0.34"
-tokio = { version = "1.33", features = ["full"] }
+tokio = { version = "1.36", features = ["full"] }
 gtfs-structures = { git = "https://github.com/lolpro11/gtfs-structure"}
 tokio-zookeeper = "0.2.1"
 
