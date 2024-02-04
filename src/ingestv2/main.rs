@@ -15,21 +15,7 @@ use kactus::aspen;
 use std::error::Error;
 use std::fs::File;
 use std::io::BufReader;
-//stores the config for each agency
-#[derive(Debug, Clone)]
-struct AgencyInfo {
-    onetrip: String,
-    realtime_vehicle_positions: String,
-    realtime_trip_updates: String,
-    realtime_alerts: String,
-    has_auth: bool,
-    auth_type: String,
-    auth_header: String,
-    auth_password: String,
-    fetch_interval: f32,
-    multiauth: Option<Vec<String>>,
-}
-
+use kactus::AgencyInfo;
 #[derive(Debug)]
 struct Agencyurls {
     vehicles: Option<String>,
@@ -77,7 +63,18 @@ async fn main() -> color_eyre::eyre::Result<()> {
                     auth_header: record[6].to_string(),
                     auth_password: record[7].to_string(),
                     fetch_interval: record[8].parse().unwrap(),
-                    multiauth: convert_multiauth_to_vec(&(record[9].to_string())),
+                    multiauth: {
+                        if !record[9].to_string().is_empty() {
+                            let mut outputvec: Vec<String> = Vec::new();
+                            for s in record[9].to_string().clone().split(",") {
+                                outputvec.push(s.to_string());
+                            }
+                    
+                            Some(outputvec)
+                        } else {
+                            None
+                        }
+                    }
                 };
 
                 agencies.push(agency);
@@ -278,22 +275,6 @@ async fn main() -> color_eyre::eyre::Result<()> {
             println!("sleeping for {:?}", sleep_duration);
             std::thread::sleep(sleep_duration);
         }
-    }
-}
-
-fn convert_multiauth_to_vec(inputstring: &String) -> Option<Vec<String>> {
-    if inputstring.is_empty() == false {
-        let mut outputvec: Vec<String> = Vec::new();
-
-        let split = inputstring.split(",");
-
-        for s in split {
-            outputvec.push(s.to_string());
-        }
-
-        Some(outputvec)
-    } else {
-        None
     }
 }
 

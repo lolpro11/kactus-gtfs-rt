@@ -1,23 +1,10 @@
 use futures::prelude::*;
+use kactus::AgencyInfo;
 use rand::Rng;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio_zookeeper::*;
 
-//stores the config for each agency
-#[derive(Debug, Clone)]
-struct AgencyInfo {
-    onetrip: String,
-    realtime_vehicle_positions: String,
-    realtime_trip_updates: String,
-    realtime_alerts: String,
-    has_auth: bool,
-    auth_type: String,
-    auth_header: String,
-    auth_password: String,
-    fetch_interval: f32,
-    multiauth: Option<Vec<String>>,
-}
 
 #[tokio::main]
 async fn main() {

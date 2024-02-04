@@ -1,6 +1,22 @@
 #[macro_use]
 extern crate serde_derive;
 
+
+//stores the config for each agency
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AgencyInfo {
+    pub onetrip: String,
+    pub realtime_vehicle_positions: String,
+    pub realtime_trip_updates: String,
+    pub realtime_alerts: String,
+    pub has_auth: bool,
+    pub auth_type: String,
+    pub auth_header: String,
+    pub auth_password: String,
+    pub fetch_interval: f32,
+    pub multiauth: Option<Vec<String>>,
+}
+
 pub fn parse_protobuf_message(
     bytes: &[u8],
 ) -> Result<gtfs_rt::FeedMessage, Box<dyn std::error::Error>> {

@@ -17,6 +17,7 @@ actix-web = { version = "4.4.1", default-features = false, features =  ["macros"
 actix-web-actors = "4.2.0"
 ahash = "0.8.7"
 amtrak-gtfs-rt = {git = "https://github.com/CatenaryMaps/amtrak-gtfs-rt"}
+anyhow = "1.0"
 arguments = "0.7"
 chrono = "0.4.33"
 chrono-tz = "0.8.5"
@@ -41,10 +42,11 @@ serde = "1.0.196"
 serde_derive = "1.0.192"
 serde_json = "1.0.113"
 snailquote = "0.3.1"
+stoppable_thread = "0.2.1"
 systemctl = "0.3.1"
 termion = "3.0.0"
-tarpc = "0.34"
-tokio = { version = "1.36", features = ["full"] }
+tarpc = { version = "0.33", features = ["tokio1", "serde-transport", "tcp", "serde-transport-json"] }
+tokio = { version = "1.36", features = ["full", "rt-multi-thread", "macros", "net"] }
 gtfs-structures = { git = "https://github.com/lolpro11/gtfs-structure"}
 tokio-zookeeper = "0.2.1"
 
@@ -70,6 +72,11 @@ path = "src/ingestv4/main.rs"
 [[bin]]
 name = "tarpcserver"
 path = "src/ingestv4/server.rs"
+
+
+[[bin]]
+name = "tarpcclient"
+path = "src/ingestv4/client.rs"
 
 [[bin]]
 name = "ingestmetrolink"
