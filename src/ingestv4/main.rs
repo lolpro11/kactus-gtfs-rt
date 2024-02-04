@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs::File, io::BufReader, sync::Arc, thread::sleep, time::Duration};
+use std::{collections::HashMap, fs::File, io::BufReader, sync::{Arc, Mutex}, thread::sleep, time::Duration};
 
 use kactus::AgencyInfo;
 use reqwest::Client;
@@ -13,17 +13,26 @@ use tokio::task;
 #[tarpc::service]
 pub trait IngestInfo {
     async fn agencies() -> String;
+    async fn addagency(agency: AgencyInfo) -> String;
 }
 
 #[derive(Clone)]
 struct KactusRPC {
-    agencies: Vec<AgencyInfo>
+    agencies: Arc<Mutex<Vec<AgencyInfo>>>,
 }
 
 #[tarpc::server]
 impl IngestInfo for KactusRPC {
     async fn agencies(self, _: context::Context) -> String {
         serde_json::to_string(&self.agencies).expect("Failed to serialize to JSON")
+    }
+    async fn addagency(self, _: context::Context, agency: AgencyInfo) -> String {
+        //addtolist(self, agency);
+        if !self.agencies.lock().unwrap().contains(&agency) {
+            self.agencies.lock().unwrap().push(agency);
+            return "Agency added".to_string();
+        }
+        return "Error: Agency Exists".to_string();
     }
 }
 
@@ -102,13 +111,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     let mut handles = HashMap::new();
 
+    let base = KactusRPC {agencies: Arc::new(Mutex::new(Vec::new()))};
 
     let listener = tarpc::serde_transport::tcp::listen("localhost:9010", Json::default)
         .await?
         .filter_map(|r| future::ready(r.ok()));
     let server = listener
         .map(BaseChannel::with_defaults)
-        .execute(KactusRPC {agencies: agencies.clone()}.serve());
+        .execute(base.serve());
     let j = task::spawn(server);
 
     for agency in agencies.into_iter() {

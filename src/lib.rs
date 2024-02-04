@@ -17,6 +17,13 @@ pub struct AgencyInfo {
     pub multiauth: Option<Vec<String>>,
 }
 
+impl PartialEq for AgencyInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.onetrip == other.onetrip
+    }
+}
+
+
 pub fn parse_protobuf_message(
     bytes: &[u8],
 ) -> Result<gtfs_rt::FeedMessage, Box<dyn std::error::Error>> {
