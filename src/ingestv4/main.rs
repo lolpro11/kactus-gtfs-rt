@@ -1,26 +1,23 @@
-use std::{collections::HashMap, fs::File, io::BufReader, sync::{mpsc::{self, Receiver, TryRecvError}, Arc, Mutex}, thread::{self, sleep}, time::Duration};
+use std::{collections::HashMap, fs::File, io::BufReader, sync::{mpsc::{self, Receiver, RecvError, Sender, TryRecvError}, Arc, Mutex}, thread::{self, sleep}, time::Duration};
 
-use kactus::{fetchurl, insert::insert_gtfs_rt_bytes, make_url, parse_protobuf_message, AgencyInfo, Agencyurls};
+use kactus::{fetchurl, insert::insert_gtfs_rt_bytes, make_url, parse_protobuf_message, AgencyInfo, Agencyurls, IngestInfo};
 use rand::seq::SliceRandom;
+use redis::Commands;
 use reqwest::Client;
-
+use kactus::FeedType;
 use futures::{future, prelude::*};
 use tarpc::{
     client, context, server::{incoming::Incoming, BaseChannel}, tokio_serde::formats::Json
 };
 use tokio::task::{self, JoinHandle};
 
-#[tarpc::service]
-pub trait IngestInfo {
-    async fn agencies() -> String;
-    async fn addagency(agency: AgencyInfo) -> String;
-}
 #[derive(Clone)]
 struct KactusRPC {
     client: Arc<Client>,
     redis_client: Arc<redis::Client>,
     agencies: Arc<Mutex<Vec<AgencyInfo>>>,
     threads: Arc<Mutex<HashMap<String, JoinHandle<()>>>>,
+    thread_channels: Arc<Mutex<HashMap<String, Sender<Option<u8>>>>>
 }
 
 #[tarpc::server]
@@ -42,10 +39,35 @@ impl IngestInfo for KactusRPC {
                 let redis_client = redis_client_clone;
                 fetchagency(&client, &redis_client, agency, rx).await;
             });
-            self.threads.lock().unwrap().insert(key, handle);
+            self.threads.lock().unwrap().insert(key.clone(), handle);
+            self.thread_channels.lock().unwrap().insert(key, tx);
             return "Agency added".to_string();
         }
         return "Error: Agency Exists".to_string();
+    }
+    async fn removeagency(self, _: context::Context, agency: String) -> String {
+        if self.thread_channels.lock().unwrap().contains_key(&agency) {
+            let _ = self.thread_channels.lock().unwrap().get(&agency).unwrap().send(Some(69));
+            self.agencies.lock().unwrap().retain(|agencyinfo| agencyinfo.onetrip != agency);
+            self.threads.lock().unwrap().remove(&agency);
+            return "Agency removed".to_string();
+        } else {
+            return "Error: Agency not found".to_string();
+        }
+    }
+    async fn getagency(self, _: context::Context, agency: String, feedtype: FeedType) -> Vec<u8> {
+        let redis_client_clone: Arc<redis::Client> = Arc::clone(&self.redis_client);
+        let mut con = redis_client_clone.get_connection().unwrap();
+        let doesexist = con.get::<String, u64>(format!("gtfsrttime|{}|{}", &agency, &feedtype));
+        if doesexist.is_err() {
+            return format!("Error in connecting to redis\n").as_bytes().to_owned();
+        }
+        let data = con.get::<String, Vec<u8>>(format!("gtfsrt|{}|{}", &agency, &feedtype));
+        if data.is_err() {
+            println!("Error: {:?}", data);
+            return format!("Error: {:?}\n", data).as_bytes().to_owned();
+        }
+        return data.unwrap();
     }
 }
 
@@ -274,7 +296,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         client: shared_client.clone(),
         redis_client: redisclient.clone(),
         agencies: Arc::new(Mutex::new(Vec::new())), 
-        threads: Arc::new(Mutex::new(HashMap::new())), 
+        threads: Arc::new(Mutex::new(HashMap::new())),
+        thread_channels: Arc::new(Mutex::new(HashMap::new())), 
     };
 
     let listener = tarpc::serde_transport::tcp::listen("localhost:9010", Json::default)

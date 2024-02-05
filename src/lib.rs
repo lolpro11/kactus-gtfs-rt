@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{fmt, time::Duration};
 
 #[macro_use]
 extern crate serde_derive;
@@ -25,6 +25,29 @@ impl PartialEq for AgencyInfo {
     }
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub enum FeedType {
+    Trips,
+    Vehicles,
+    Alerts,
+    Shapes,
+}
+
+impl fmt::Display for FeedType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Use a match statement to determine the string representation for each variant
+        let display_str = match self {
+            FeedType::Trips => "trips",
+            FeedType::Vehicles => "vehicles",
+            FeedType::Alerts => "alerts",
+            FeedType::Shapes => "shapes",
+        };
+
+        // Write the string representation to the formatter
+        write!(f, "{}", display_str)
+    }
+}
+
 
 #[derive(Debug)]
 pub struct Agencyurls {
@@ -33,6 +56,13 @@ pub struct Agencyurls {
     pub alerts: Option<String>,
 }
 
+#[tarpc::service]
+pub trait IngestInfo {
+    async fn agencies() -> String;
+    async fn addagency(agency: AgencyInfo) -> String;
+    async fn removeagency(agency: String) -> String;
+    async fn getagency(agency: String, feedtype: FeedType) -> Vec<u8>;
+}
 
 pub async fn fetchurl(
     url: &Option<String>,
