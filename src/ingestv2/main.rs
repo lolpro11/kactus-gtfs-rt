@@ -1,8 +1,7 @@
 use futures::join;
 use futures::StreamExt;
-use redis::Commands;
 use reqwest::Client as ReqwestClient;
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant};
 use termion::{color, style};
 extern crate color_eyre;
 use kactus::parse_protobuf_message;
@@ -10,9 +9,7 @@ extern crate rand;
 use crate::rand::prelude::SliceRandom;
 use kactus::insert::insert_gtfs_rt_bytes;
 extern crate csv;
-use futures::future::join_all;
 use kactus::aspen;
-use std::error::Error;
 use std::fs::File;
 use std::io::BufReader;
 use kactus::AgencyInfo;
@@ -88,13 +85,15 @@ async fn main() -> color_eyre::eyre::Result<()> {
 
     let mut lastloop;
 
+
+    let client = reqwest::ClientBuilder::new()
+        .deflate(true)
+        .gzip(true)
+        .brotli(true)
+        .build()
+        .unwrap();
+
     loop {
-        let client = reqwest::ClientBuilder::new()
-            .deflate(true)
-            .gzip(true)
-            .brotli(true)
-            .build()
-            .unwrap();
 
         lastloop = Instant::now();
 
@@ -180,17 +179,12 @@ async fn main() -> color_eyre::eyre::Result<()> {
                         true => {
                             let swiftly_vehicles = parse_protobuf_message(&bytes)
                                 .unwrap();
-
                             let octa_raw_file = client.get("https://api.octa.net/GTFSRealTime/protoBuf/VehiclePositions.aspx").send().await;
-
                             match octa_raw_file {
                                 Ok(octa_raw_file) => {
                                     let octa_raw_file = octa_raw_file.bytes().await.unwrap();
-
                                     let octa_vehicles = parse_protobuf_message(&octa_raw_file).unwrap();
-
                                     let mut output_joined = swiftly_vehicles.clone();
-
                                     insert_gtfs_rt_bytes(
                                         &mut con,
                                         &bytes.to_vec(),
@@ -200,16 +194,15 @@ async fn main() -> color_eyre::eyre::Result<()> {
                                 }
                                 Err(e) => {
                                     println!("error fetching raw octa file: {:?}", e);
-
-                            insert_gtfs_rt_bytes(
-                                &mut con,
-                                &bytes.to_vec(),
-                                &("f-octa~rt".to_string()),
-                                &("vehicles".to_string()),
-                            );
+                                    insert_gtfs_rt_bytes(
+                                        &mut con,
+                                        &bytes.to_vec(),
+                                        &("f-octa~rt".to_string()),
+                                        &("vehicles".to_string()),
+                                    );
                                 }
+                            }
                         }
-                    }
                         false => {
                             insert_gtfs_rt_bytes(
                                 &mut con,
@@ -218,8 +211,8 @@ async fn main() -> color_eyre::eyre::Result<()> {
                                 &("vehicles".to_string()),
                             );
                         }
-                    }
-                    }
+                    }   
+                }
 
                 if trips_result.is_some() {
                     let bytes = trips_result.as_ref().unwrap().to_vec();
@@ -278,71 +271,3 @@ async fn main() -> color_eyre::eyre::Result<()> {
     }
 }
 
-async fn fetchurl(
-    url: &Option<String>,
-    auth_header: &String,
-    auth_type: &String,
-    auth_password: &String,
-    client: &ReqwestClient,
-    timeoutforfetch: u64,
-) -> Option<Vec<u8>> {
-    match url {
-        Some(url) => match String::from(url).contains("kactus") {
-            false => {
-                let mut req = client.get(url);
-
-                if auth_type == "header" {
-                    req = req.header(auth_header, auth_password);
-                }
-
-                let resp = req
-                    .timeout(Duration::from_millis(timeoutforfetch))
-                    .send()
-                    .await;
-
-                match resp {
-                    Ok(resp) => {
-                        if resp.status().is_success() {
-                            match resp.bytes().await {
-                                Ok(bytes_pre) => {
-                                    let bytes = bytes_pre.to_vec();
-                                    Some(bytes)
-                                }
-                                _ => None,
-                            }
-                        } else {
-                            println!("{}:{:?}", &url, resp.status());
-                            None
-                        }
-                    }
-                    Err(e) => {
-                        println!("error fetching url: {:?}", e);
-                        None
-                    }
-                }
-            }
-
-            true => None,
-        },
-        _ => None,
-    }
-}
-
-fn make_url(
-    url: &String,
-    auth_type: &String,
-    auth_header: &String,
-    auth_password: &String,
-) -> Option<String> {
-    if url.is_empty() == false {
-        let mut outputurl = url.clone();
-
-        if !auth_password.is_empty() && auth_type == "query_param" {
-            outputurl = outputurl.replace("PASSWORD", &auth_password);
-        }
-
-        Some(outputurl)
-    } else {
-        None
-    }
-}

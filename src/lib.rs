@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 #[macro_use]
 extern crate serde_derive;
 
@@ -23,6 +25,76 @@ impl PartialEq for AgencyInfo {
     }
 }
 
+
+#[derive(Debug)]
+pub struct Agencyurls {
+    pub vehicles: Option<String>,
+    pub trips: Option<String>,
+    pub alerts: Option<String>,
+}
+
+
+pub async fn fetchurl(
+    url: &Option<String>,
+    auth_header: &String,
+    auth_type: &String,
+    auth_password: &String,
+    client: &reqwest::Client,
+    timeoutforfetch: u64,
+) -> Option<Vec<u8>> {
+    if url.is_none() || url.to_owned().unwrap().contains("kactus") {
+        return None;
+    }
+    let mut req = client.get(url.to_owned().unwrap());
+
+    if auth_type == "header" {
+        req = req.header(auth_header, auth_password);
+    }
+
+    let resp = req
+        .timeout(Duration::from_millis(timeoutforfetch))
+        .send()
+        .await;
+
+    match resp {
+        Ok(resp) => {
+            if resp.status().is_success() {
+                match resp.bytes().await {
+                    Ok(bytes_pre) => {
+                        let bytes = bytes_pre.to_vec();
+                        Some(bytes)
+                    }
+                    _ => None,
+                }
+            } else {
+                println!("{}:{:?}", &url.clone().unwrap(), resp.status());
+                None
+            }
+        }
+        Err(e) => {
+            println!("error fetching url: {:?}", e);
+            None
+        }
+    }
+}
+
+pub fn make_url(
+    url: &String,
+    auth_type: &String,
+    auth_header: &String,
+    auth_password: &String,
+) -> Option<String> {
+    if !url.is_empty() {
+        let mut outputurl = url.clone();
+
+        if !auth_password.is_empty() && auth_type == "query_param" {
+            outputurl = outputurl.replace("PASSWORD", &auth_password);
+        }
+
+        return Some(outputurl);
+    }
+    return None;
+}
 
 pub fn parse_protobuf_message(
     bytes: &[u8],
