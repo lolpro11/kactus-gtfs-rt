@@ -1,15 +1,14 @@
-use std::{collections::HashMap, fs::File, io::BufReader, sync::{Arc, Mutex}, thread::{self, sleep}, time::Duration};
+use std::{collections::HashMap, fs::File, io::BufReader, sync::{mpsc::{self, Receiver, TryRecvError}, Arc, Mutex}, thread::{self, sleep}, time::Duration};
 
 use kactus::{fetchurl, insert::insert_gtfs_rt_bytes, make_url, parse_protobuf_message, AgencyInfo, Agencyurls};
 use rand::seq::SliceRandom;
 use reqwest::Client;
-use stoppable_thread::{self, StoppableHandle};
 
 use futures::{future, prelude::*};
 use tarpc::{
     client, context, server::{incoming::Incoming, BaseChannel}, tokio_serde::formats::Json
 };
-use tokio::task;
+use tokio::task::{self, JoinHandle};
 
 #[tarpc::service]
 pub trait IngestInfo {
@@ -21,7 +20,7 @@ struct KactusRPC {
     client: Arc<Client>,
     redis_client: Arc<redis::Client>,
     agencies: Arc<Mutex<Vec<AgencyInfo>>>,
-    threads: Arc<Mutex<HashMap<String, StoppableHandle<()>>>>,
+    threads: Arc<Mutex<HashMap<String, JoinHandle<()>>>>,
 }
 
 #[tarpc::server]
@@ -37,10 +36,11 @@ impl IngestInfo for KactusRPC {
             //self.agencies.lock().unwrap().thread
             let shared_client_clone = Arc::clone(&self.client);
             let redis_client_clone = Arc::clone(&self.redis_client);
-            let handle = stoppable_thread::spawn(move |_msg| {
+            let (tx, rx) = mpsc::channel::<Option<u8>>();
+            let handle = tokio::spawn(async move {
                 let client = shared_client_clone;
                 let redis_client = redis_client_clone;
-                fetchagency(&client, &redis_client, agency.clone());
+                fetchagency(&client, &redis_client, agency, rx).await;
             });
             self.threads.lock().unwrap().insert(key, handle);
             return "Agency added".to_string();
@@ -50,10 +50,17 @@ impl IngestInfo for KactusRPC {
 }
 
 
-async fn fetchagency(client: &Client, redis_client: &redis::Client, agency: AgencyInfo)  {
+async fn fetchagency(client: &Client, redis_client: &redis::Client, agency: AgencyInfo, rx: Receiver<Option<u8>>)  {
     //let client = reqwest::ClientBuilder::new().deflate(true).gzip(true).brotli(true).build().unwrap();
     let mut con = redis_client.get_connection().unwrap();
     loop {
+        match rx.try_recv() {
+            Ok(_) | Err(TryRecvError::Disconnected) => {
+                println!("Terminating.");
+                break;
+            }
+            Err(TryRecvError::Empty) => {}
+        }
         let fetch = Agencyurls {
             vehicles: make_url(
                 &agency.realtime_vehicle_positions,
@@ -282,10 +289,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let key = agency.onetrip.clone();
         let shared_client_clone = Arc::clone(&shared_client);
         let redis_client_clone = Arc::clone(&redisclient);
-        let handle = stoppable_thread::spawn( move |_msg| {
+        let (tx, rx) = mpsc::channel();
+        let handle = tokio::spawn(async move {
             let client = shared_client_clone;
-            let redis_client = redis_client_clone; 
-            fetchagency(&client, &redis_client, agency.clone());
+            let redis_client = redis_client_clone;
+            fetchagency(&client, &redis_client, agency, rx).await;
         });
 
         handles.insert(key, handle);
@@ -299,10 +307,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("{:?}", client.agencies(ctx).await?);*/
     for (index, handle) in handles {
-        match handle.join() {
-            Ok(_) => println!("Thread {} finished successfully", index),
-            Err(_) => println!("Thread {} panicked", index),
-        }
+        handle.await.unwrap();
     }
     println!("Ready at localhost");
     j.await?;
