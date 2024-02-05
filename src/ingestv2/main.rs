@@ -1,5 +1,7 @@
 use futures::join;
 use futures::StreamExt;
+use kactus::fetchurl;
+use kactus::make_url;
 use reqwest::Client as ReqwestClient;
 use std::time::{Duration, Instant};
 use termion::{color, style};
