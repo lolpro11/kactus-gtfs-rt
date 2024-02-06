@@ -299,24 +299,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let redisclient = Arc::new(redis::Client::open("redis://127.0.0.1:6379/").unwrap());
 
     let mut handles = HashMap::new();
+    let mut channels = HashMap::new();
 
-    let base = KactusRPC {
-        client: shared_client.clone(),
-        redis_client: redisclient.clone(),
-        agencies: Arc::new(Mutex::new(Vec::new())), 
-        threads: Arc::new(Mutex::new(HashMap::new())),
-        thread_channels: Arc::new(Mutex::new(HashMap::new())), 
-    };
-
-    let listener = tarpc::serde_transport::tcp::listen("localhost:9010", Json::default)
-        .await?
-        .filter_map(|r| future::ready(r.ok()));
-    let server = listener
-        .map(BaseChannel::with_defaults)
-        .execute(base.serve());
-    let j = task::spawn(server);
-
-    for agency in agencies.into_iter() {
+    for agency in agencies.clone().into_iter() {
         let key = agency.onetrip.clone();
         let shared_client_clone = Arc::clone(&shared_client);
         let redis_client_clone = Arc::clone(&redisclient);
@@ -326,10 +311,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let redis_client = redis_client_clone;
             fetchagency(&client, &redis_client, agency, rx).await;
         });
-
-        handles.insert(key, handle);
+        handles.insert(key.clone(), handle);
+        channels.insert(key, tx);
     }
 
+    let base = KactusRPC {
+        client: shared_client.clone(),
+        redis_client: redisclient.clone(),
+        agencies: Arc::new(Mutex::new(agencies)), 
+        threads: Arc::new(Mutex::new(handles)),
+        thread_channels: Arc::new(Mutex::new(channels)), 
+    };
+
+    let listener = tarpc::serde_transport::tcp::listen("localhost:9010", Json::default)
+        .await?
+        .filter_map(|r| future::ready(r.ok()));
+    let server = listener
+        .map(BaseChannel::with_defaults)
+        .execute(base.serve());
+    let j = task::spawn(server);
     /*let connection =
         tarpc::serde_transport::tcp::connect("localhost:9010", Json::default).await?;
     let client = IngestInfoClient::new(client::Config::default(), connection).spawn();
@@ -337,9 +337,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ctx = context::current();
 
     println!("{:?}", client.agencies(ctx).await?);*/
-    for (index, handle) in handles {
-        handle.await.unwrap();
-    }
     println!("Ready at localhost");
     j.await?;
     Ok(())
