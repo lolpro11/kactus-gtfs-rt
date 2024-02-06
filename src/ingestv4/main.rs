@@ -1,6 +1,7 @@
-use std::{collections::HashMap, fs::File, io::BufReader, sync::{mpsc::{self, Receiver, RecvError, Sender, TryRecvError}, Arc, Mutex}, thread::{self, sleep}, time::Duration};
+use std::{collections::HashMap, fs::File, io::BufReader, sync::{mpsc::{self, Receiver, RecvError, Sender, TryRecvError}, Arc, Mutex}, thread::{self, sleep}, time::{Duration, Instant}};
 
 use kactus::{fetchurl, insert::insert_gtfs_rt_bytes, make_url, parse_protobuf_message, AgencyInfo, Agencyurls, IngestInfo};
+use protobuf::well_known_types::duration;
 use rand::seq::SliceRandom;
 use redis::Commands;
 use reqwest::Client;
@@ -83,6 +84,7 @@ async fn fetchagency(client: &Client, redis_client: &redis::Client, agency: Agen
             }
             Err(TryRecvError::Empty) => {}
         }
+        let time = Instant::now();
         let fetch = Agencyurls {
             vehicles: make_url(
                 &agency.realtime_vehicle_positions,
@@ -218,6 +220,12 @@ async fn fetchagency(client: &Client, redis_client: &redis::Client, agency: Agen
                 &agency.onetrip,
                 &("alerts".to_string()),
             );
+        }
+        let duration = time.elapsed().as_secs_f32();
+        if duration < agency.fetch_interval {
+            let sleep_duration: f32 = agency.fetch_interval - duration;
+            println!("sleeping for {:?}", sleep_duration);
+            std::thread::sleep(Duration::from_secs_f32(sleep_duration));
         }
     }
 }
