@@ -20,7 +20,7 @@ amtrak-gtfs-rt = {git = "https://github.com/CatenaryMaps/amtrak-gtfs-rt"}
 anyhow = "1.0"
 arguments = "0.7"
 chrono = "0.4.34"
-chrono-tz = "0.8.5"
+chrono-tz = "0.8.6"
 color-eyre = "0.6.2"
 csv = "1.3"
 #etcd = "0.9.0"
