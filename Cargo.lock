@@ -1170,8 +1170,8 @@ checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
 
 [[package]]
 name = "gtfs-rt"
-version = "0.4.0"
-source = "git+https://github.com/lolpro11/gtfs-rt#f704d84103d0a38daf4962ae4d0d9660e11f501e"
+version = "0.4.1"
+source = "git+https://github.com/lolpro11/gtfs-rt#e166336f20c2e65f7290a85dfcd637025c5029be"
 dependencies = [
  "prost",
  "prost-build",
