@@ -142,7 +142,7 @@ pub mod insert {
 
     use prost::Message;
     use redis::{Commands, Connection};
-    use std::time::{SystemTime, UNIX_EPOCH};
+    use std::{fs::File, io::{self, Write}, time::{SystemTime, UNIX_EPOCH}};
 
     pub fn insert_gtfs_rt_bytes(
         con: &mut Connection,
@@ -168,6 +168,22 @@ pub mod insert {
         inserttimes(con, &onetrip, &category, &now_millis);
         //let _ = con.set_read_timeout(Some(Duration::new(10, 0)));
     }
+    pub fn persist_gtfs_rt_bytes(
+        bytes: &Vec<u8>,
+        onetrip: &str,
+        category: &str,
+    ) -> io::Result<()> {
+        let now_millis = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis()
+            .to_string();
+
+        let file_path = format!("./gtfs-rt/{}-{}-{}", onetrip, category, now_millis);
+        let mut file = File::create(file_path)?;
+        file.write_all(&bytes)
+    }
+
     pub fn insert_gtfs_rt(
         con: &mut Connection,
         data: &gtfs_rt::FeedMessage,

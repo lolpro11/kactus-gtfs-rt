@@ -1,6 +1,7 @@
 use futures::join;
 use futures::StreamExt;
 use kactus::fetchurl;
+use kactus::insert::persist_gtfs_rt_bytes;
 use kactus::make_url;
 use std::time::{Duration, Instant};
 use termion::{color, style};
@@ -187,19 +188,21 @@ async fn main() -> color_eyre::eyre::Result<()> {
                                 let output_joined = swiftly_vehicles.clone();
                                 insert_gtfs_rt_bytes(
                                     &mut con,
-                                    &bytes.to_vec(),
+                                    &bytes,
                                     "f-octa~rt",
                                     "vehicles",
                                 );
+                                let _ = persist_gtfs_rt_bytes(&bytes, "f-octa~rt", "vehicles");
                             }
                             Err(e) => {
                                 println!("error fetching raw octa file: {:?}", e);
                                 insert_gtfs_rt_bytes(
                                     &mut con,
-                                    &bytes.to_vec(),
+                                    &bytes,
                                     "f-octa~rt",
                                     "vehicles",
                                 );
+                                let _ = persist_gtfs_rt_bytes(&bytes, "f-octa~rt", "vehicles");
                             }
                         }
                     } else {
@@ -209,6 +212,7 @@ async fn main() -> color_eyre::eyre::Result<()> {
                             &agency.onetrip,
                             "vehicles",
                         );
+                        let _ = persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "vehicles");
                     }
                 }
 
@@ -218,6 +222,7 @@ async fn main() -> color_eyre::eyre::Result<()> {
                     println!("{} trips bytes: {}", &agency.onetrip, bytes.len());
 
                     insert_gtfs_rt_bytes(&mut con, &bytes, &agency.onetrip, "trips");
+                    let _ = persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "trips");
                 }
 
                 if alerts_result.is_some() {
@@ -231,6 +236,7 @@ async fn main() -> color_eyre::eyre::Result<()> {
                         &agency.onetrip,
                         "alerts",
                     );
+                    let _ = persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "alerts");
                 }
 
                 aspen::send_to_aspen(

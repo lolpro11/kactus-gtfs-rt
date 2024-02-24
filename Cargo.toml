@@ -65,6 +65,11 @@ path = "src/main.rs"
 name = "ingestv2"
 path = "src/ingestv2/main.rs"
 
+
+[[bin]]
+name = "store"
+path = "src/ingestv2/store.rs"
+
 [[bin]]
 name = "ingestv4"
 path = "src/ingestv4/main.rs"
