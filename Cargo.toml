@@ -65,7 +65,6 @@ path = "src/main.rs"
 name = "ingestv2"
 path = "src/ingestv2/main.rs"
 
-
 [[bin]]
 name = "store"
 path = "src/ingestv2/store.rs"
@@ -77,7 +76,6 @@ path = "src/ingestv4/main.rs"
 [[bin]]
 name = "tarpcserver"
 path = "src/ingestv4/server.rs"
-
 
 [[bin]]
 name = "tarpcclient"
