@@ -162,42 +162,39 @@ async fn fetchagency(client: &Client, redis_client: &redis::Client, agency: Agen
 
             println!("{} vehicles bytes: {}", &agency.onetrip, bytes.len());
 
-            match agency.onetrip.as_str() == "f-octa~rt" {
-                true => {
-                    let swiftly_vehicles = parse_protobuf_message(&bytes)
-                        .unwrap();
-                    let octa_raw_file = client.get("https://api.octa.net/GTFSRealTime/protoBuf/VehiclePositions.aspx").send().await;
-                    match octa_raw_file {
-                        Ok(octa_raw_file) => {
-                            let octa_raw_file = octa_raw_file.bytes().await.unwrap();
-                            let octa_vehicles = parse_protobuf_message(&octa_raw_file).unwrap();
-                            let mut output_joined = swiftly_vehicles.clone();
-                            insert_gtfs_rt_bytes(
-                                &mut con,
-                                &bytes.to_vec(),
-                                &("f-octa~rt".to_string()),
-                                &("vehicles".to_string()),
-                            );
-                        }
-                        Err(e) => {
-                            println!("error fetching raw octa file: {:?}", e);
-                            insert_gtfs_rt_bytes(
-                                &mut con,
-                                &bytes.to_vec(),
-                                &("f-octa~rt".to_string()),
-                                &("vehicles".to_string()),
-                            );
-                        }
+        if agency.onetrip.as_str() == "f-octa~rt" {
+                let swiftly_vehicles = parse_protobuf_message(&bytes)
+                    .unwrap();
+                let octa_raw_file = client.get("https://api.octa.net/GTFSRealTime/protoBuf/VehiclePositions.aspx").send().await;
+                match octa_raw_file {
+                    Ok(octa_raw_file) => {
+                        let octa_raw_file = octa_raw_file.bytes().await.unwrap();
+                        let octa_vehicles = parse_protobuf_message(&octa_raw_file).unwrap();
+                        let mut output_joined = swiftly_vehicles.clone();
+                        insert_gtfs_rt_bytes(
+                            &mut con,
+                            &bytes.to_vec(),
+                            &("f-octa~rt".to_string()),
+                            &("vehicles".to_string()),
+                        );
+                    }
+                    Err(e) => {
+                        println!("error fetching raw octa file: {:?}", e);
+                        insert_gtfs_rt_bytes(
+                            &mut con,
+                            &bytes.to_vec(),
+                            "f-octa~rt",
+                            "vehicles",
+                        );
                     }
                 }
-                false => {
-                    insert_gtfs_rt_bytes(
-                        &mut con,
-                        &bytes,
-                        &agency.onetrip,
-                        &("vehicles".to_string()),
-                    );
-                }
+            } else {
+                insert_gtfs_rt_bytes(
+                    &mut con,
+                    &bytes,
+                    &agency.onetrip,
+                    "vehicles",
+                );
             }   
         }
 
@@ -206,7 +203,7 @@ async fn fetchagency(client: &Client, redis_client: &redis::Client, agency: Agen
 
             println!("{} trips bytes: {}", &agency.onetrip, bytes.len());
 
-            insert_gtfs_rt_bytes(&mut con, &bytes, &agency.onetrip, &("trips".to_string()));
+            insert_gtfs_rt_bytes(&mut con, &bytes, &agency.onetrip, "trips");
         }
 
         if alerts_result.is_some() {
@@ -218,7 +215,7 @@ async fn fetchagency(client: &Client, redis_client: &redis::Client, agency: Agen
                 &mut con,
                 &bytes,
                 &agency.onetrip,
-                &("alerts".to_string()),
+                "alerts",
             );
         }
         let duration = time.elapsed().as_secs_f32();
