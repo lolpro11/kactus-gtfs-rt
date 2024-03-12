@@ -176,44 +176,13 @@ async fn main() -> color_eyre::eyre::Result<()> {
                     let bytes = vehicles_result.as_ref().unwrap().to_vec();
 
                     println!("{} vehicles bytes: {}", &agency.onetrip, bytes.len());
-
-                    if agency.onetrip.as_str() == "f-octa~rt" {
-                        let swiftly_vehicles = parse_protobuf_message(&bytes)
-                            .unwrap();
-                        let octa_raw_file = client.get("https://api.octa.net/GTFSRealTime/protoBuf/VehiclePositions.aspx").send().await;
-                        match octa_raw_file {
-                            Ok(octa_raw_file) => {
-                                let octa_raw_file = octa_raw_file.bytes().await.unwrap();
-                                let octa_vehicles = parse_protobuf_message(&octa_raw_file).unwrap();
-                                let output_joined = swiftly_vehicles.clone();
-                                insert_gtfs_rt_bytes(
-                                    &mut con,
-                                    &bytes,
-                                    "f-octa~rt",
-                                    "vehicles",
-                                );
-                                let _ = persist_gtfs_rt_bytes(&bytes, "f-octa~rt", "vehicles");
-                            }
-                            Err(e) => {
-                                println!("error fetching raw octa file: {:?}", e);
-                                insert_gtfs_rt_bytes(
-                                    &mut con,
-                                    &bytes,
-                                    "f-octa~rt",
-                                    "vehicles",
-                                );
-                                let _ = persist_gtfs_rt_bytes(&bytes, "f-octa~rt", "vehicles");
-                            }
-                        }
-                    } else {
-                        insert_gtfs_rt_bytes(
-                            &mut con,
-                            &bytes,
-                            &agency.onetrip,
-                            "vehicles",
-                        );
-                        let _ = persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "vehicles");
-                    }
+                    insert_gtfs_rt_bytes(
+                        &mut con,
+                        &bytes,
+                        &agency.onetrip,
+                        "vehicles",
+                    );
+                    persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "vehicles").unwrap();
                 }
 
                 if trips_result.is_some() {
@@ -222,7 +191,7 @@ async fn main() -> color_eyre::eyre::Result<()> {
                     println!("{} trips bytes: {}", &agency.onetrip, bytes.len());
 
                     insert_gtfs_rt_bytes(&mut con, &bytes, &agency.onetrip, "trips");
-                    let _ = persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "trips");
+                    persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "trips").unwrap();
                 }
 
                 if alerts_result.is_some() {
@@ -236,7 +205,7 @@ async fn main() -> color_eyre::eyre::Result<()> {
                         &agency.onetrip,
                         "alerts",
                     );
-                    let _ = persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "alerts");
+                    persist_gtfs_rt_bytes(&bytes, &agency.onetrip, "alerts").unwrap();
                 }
 
                 aspen::send_to_aspen(

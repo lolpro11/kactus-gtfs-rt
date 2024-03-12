@@ -183,6 +183,18 @@ pub mod insert {
         let mut file = File::create(file_path)?;
         file.write_all(&bytes)
     }
+    pub fn persist_gtfs_rt(
+        data: &gtfs_rt::FeedMessage,
+        onetrip: &str,
+        category: &str,
+    ) -> io::Result<()> {
+        let now_millis = data.header.timestamp.unwrap_or(0);
+        
+        let bytes: Vec<u8> = data.encode_to_vec();
+        let file_path = format!("./gtfs-rt/{}-{}-{}", onetrip, category, now_millis);
+        let mut file = File::create(file_path)?;
+        file.write_all(&bytes)
+    }
 
     pub fn insert_gtfs_rt(
         con: &mut Connection,

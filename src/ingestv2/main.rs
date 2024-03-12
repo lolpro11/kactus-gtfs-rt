@@ -175,41 +175,12 @@ async fn main() -> color_eyre::eyre::Result<()> {
                     let bytes = vehicles_result.as_ref().unwrap().to_vec();
 
                     println!("{} vehicles bytes: {}", &agency.onetrip, bytes.len());
-
-                    if agency.onetrip.as_str() == "f-octa~rt" {
-                        let swiftly_vehicles = parse_protobuf_message(&bytes)
-                            .unwrap();
-                        let octa_raw_file = client.get("https://api.octa.net/GTFSRealTime/protoBuf/VehiclePositions.aspx").send().await;
-                        match octa_raw_file {
-                            Ok(octa_raw_file) => {
-                                let octa_raw_file = octa_raw_file.bytes().await.unwrap();
-                                let octa_vehicles = parse_protobuf_message(&octa_raw_file).unwrap();
-                                let output_joined = swiftly_vehicles.clone();
-                                insert_gtfs_rt_bytes(
-                                    &mut con,
-                                    &bytes.to_vec(),
-                                    "f-octa~rt",
-                                    "vehicles",
-                                );
-                            }
-                            Err(e) => {
-                                println!("error fetching raw octa file: {:?}", e);
-                                insert_gtfs_rt_bytes(
-                                    &mut con,
-                                    &bytes.to_vec(),
-                                    "f-octa~rt",
-                                    "vehicles",
-                                );
-                            }
-                        }
-                    } else {
-                        insert_gtfs_rt_bytes(
-                            &mut con,
-                            &bytes,
-                            &agency.onetrip,
-                            "vehicles",
-                        );
-                    }
+                    insert_gtfs_rt_bytes(
+                        &mut con,
+                        &bytes,
+                        &agency.onetrip,
+                        "vehicles",
+                    );
                 }
 
                 if trips_result.is_some() {
