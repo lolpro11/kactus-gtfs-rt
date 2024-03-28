@@ -338,9 +338,9 @@ dependencies = [
 
 [[package]]
 name = "amtrak-gtfs-rt"
-version = "0.1.19"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f89b54bbc2eaa754d4b6c69d9a55002dce3af736542c0ed9ea3ac5588f3533ae"
+checksum = "ca40077d9b94d05438ac8a8d20ba62b03c8cf8f0e50690302b0aa55c18f318dc"
 dependencies = [
  "amtk",
  "amtrak-api",
@@ -348,7 +348,7 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "geojson",
- "gtfs-rt 0.4.0",
+ "gtfs-rt 0.5.0",
  "gtfs-structures",
  "openssl",
  "prost 0.11.9",
@@ -1198,24 +1198,24 @@ checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
 
 [[package]]
 name = "gtfs-rt"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b2eb9b34ce86f4f0f6d920356a7e1c766b95d4db07adea993487859a622d42c"
-dependencies = [
- "prost 0.11.9",
- "prost-build 0.11.9",
- "prost-derive 0.11.9",
- "serde",
-]
-
-[[package]]
-name = "gtfs-rt"
 version = "0.4.1"
 source = "git+https://github.com/lolpro11/gtfs-rt#e166336f20c2e65f7290a85dfcd637025c5029be"
 dependencies = [
  "prost 0.12.3",
  "prost-build 0.12.3",
  "prost-derive 0.12.3",
+ "serde",
+]
+
+[[package]]
+name = "gtfs-rt"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a34af11e4d8a664910a4399b7eeb8b9e9e0b7dbf50f0667446c74a33073862d5"
+dependencies = [
+ "prost 0.11.9",
+ "prost-build 0.11.9",
+ "prost-derive 0.11.9",
  "serde",
 ]
 
