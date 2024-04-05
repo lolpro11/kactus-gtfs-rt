@@ -1201,9 +1201,9 @@ name = "gtfs-rt"
 version = "0.4.1"
 source = "git+https://github.com/lolpro11/gtfs-rt#e166336f20c2e65f7290a85dfcd637025c5029be"
 dependencies = [
- "prost 0.12.3",
+ "prost 0.12.4",
  "prost-build 0.12.3",
- "prost-derive 0.12.3",
+ "prost-derive 0.12.4",
  "serde",
 ]
 
@@ -1610,7 +1610,7 @@ dependencies = [
  "hyper 1.2.0",
  "lock_api",
  "metrohash",
- "prost 0.12.3",
+ "prost 0.12.4",
  "protobuf",
  "protobuf-json-mapping",
  "qstring",
@@ -2175,12 +2175,12 @@ dependencies = [
 
 [[package]]
 name = "prost"
-version = "0.12.3"
+version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "146c289cda302b98a28d40c8b3b90498d6e526dd24ac2ecea73e4e491685b94a"
+checksum = "d0f5d036824e4761737860779c906171497f6d55681139d8312388f8fe398922"
 dependencies = [
  "bytes",
- "prost-derive 0.12.3",
+ "prost-derive 0.12.4",
 ]
 
 [[package]]
@@ -2219,7 +2219,7 @@ dependencies = [
  "once_cell",
  "petgraph",
  "prettyplease 0.2.16",
- "prost 0.12.3",
+ "prost 0.12.4",
  "prost-types 0.12.3",
  "regex",
  "syn 2.0.48",
@@ -2242,9 +2242,9 @@ dependencies = [
 
 [[package]]
 name = "prost-derive"
-version = "0.12.3"
+version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efb6c9a1dd1def8e2124d17e83a20af56f1570d6c2d2bd9e266ccb768df3840e"
+checksum = "19de2de2a00075bf566bee3bd4db014b11587e84184d3f7a791bc17f1a8e9e48"
 dependencies = [
  "anyhow",
  "itertools 0.11.0",
@@ -2268,7 +2268,7 @@ version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "193898f59edcf43c26227dcd4c8427f00d99d61e95dcde58dabd49fa291d470e"
 dependencies = [
- "prost 0.12.3",
+ "prost 0.12.4",
 ]
 
 [[package]]
