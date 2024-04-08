@@ -338,9 +338,9 @@ dependencies = [
 
 [[package]]
 name = "amtrak-gtfs-rt"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca40077d9b94d05438ac8a8d20ba62b03c8cf8f0e50690302b0aa55c18f318dc"
+checksum = "4af370394bf7a7e705be070601f3fde18c3c7a88c68b96d03e00cd1fc59896e2"
 dependencies = [
  "amtk",
  "amtrak-api",
