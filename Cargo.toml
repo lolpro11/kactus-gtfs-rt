@@ -44,7 +44,7 @@ serde_json = "1.0"
 snailquote = "0.3.1"
 stoppable_thread = "0.2.1"
 systemctl = "0.3.1"
-termion = "3.0.0"
+termion = "4.0.0"
 tarpc = { version = "0.33", features = ["tokio1", "serde-transport", "tcp", "serde-transport-json"] }
 tokio = { version = "1.37", features = ["full", "rt-multi-thread", "macros", "net"] }
 gtfs-structures = "*"
