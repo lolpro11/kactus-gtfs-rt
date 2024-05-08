@@ -48,7 +48,7 @@ termion = "4.0.0"
 tarpc = { version = "0.33", features = ["tokio1", "serde-transport", "tcp", "serde-transport-json"] }
 tokio = { version = "1.37", features = ["full", "rt-multi-thread", "macros", "net"] }
 gtfs-structures = "*"
-tokio-zookeeper = "0.3.0"
+tokio-zookeeper = "0.4.0"
 
 [build]
 target = "x86_64-unknown-linux-gnu"
