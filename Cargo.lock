@@ -338,15 +338,16 @@ dependencies = [
 
 [[package]]
 name = "amtrak-gtfs-rt"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4af370394bf7a7e705be070601f3fde18c3c7a88c68b96d03e00cd1fc59896e2"
+checksum = "43bff009e0bfbf0d70a1bf00dabb21958b40559a8b254eb4336b0f2655e7b735"
 dependencies = [
  "amtk",
  "amtrak-api",
  "base64 0.21.7",
  "chrono",
  "chrono-tz 0.8.6",
+ "futures",
  "geojson",
  "gtfs-rt 0.5.0",
  "gtfs-structures",
