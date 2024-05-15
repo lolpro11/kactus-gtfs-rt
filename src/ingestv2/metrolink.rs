@@ -390,7 +390,7 @@ async fn runcategory(
             if response.status().is_client_error() {
                 println!("{}Response status: {}{}", color::Fg(color::Red), response.status().as_str(), style::Reset);
 
-                if response.status() == http::StatusCode::TOO_MANY_REQUESTS {
+                if response.status() == reqwest::StatusCode::TOO_MANY_REQUESTS {
                     println!(
                         "{}Recieved 429, freezing{}",
                         color::Fg(color::Red),
