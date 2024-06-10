@@ -12,7 +12,7 @@ non_ascii_idents = "deny"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix = "0.13.3"
+actix = "0.13.5"
 actix-web = { version = "4.7.0", default-features = false, features =  ["macros", "compress-brotli", "compress-gzip", "cookies", "http2"] }
 actix-web-actors = "4.3.0"
 ahash = "0.8.11"
