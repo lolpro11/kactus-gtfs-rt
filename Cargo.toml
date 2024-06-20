@@ -13,7 +13,7 @@ non_ascii_idents = "deny"
 
 [dependencies]
 actix = "0.13"
-actix-web = { version = "4.7", default-features = false, features =  ["macros", "compress-brotli", "compress-gzip", "cookies", "http2"] }
+actix-web = { version = "4.8", default-features = false, features =  ["macros", "compress-brotli", "compress-gzip", "cookies", "http2"] }
 actix-web-actors = "4.3"
 ahash = "0.8.11"
 amtrak-gtfs-rt = "*"
