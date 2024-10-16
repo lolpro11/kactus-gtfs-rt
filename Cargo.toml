@@ -31,7 +31,7 @@ lock_api = "0.4.12"
 metrohash = "1.0"
 prost = "0.11"
 protobuf = { version = "3.2.0", features = ["with-bytes"] }
-protobuf-json-mapping = "3.5.0"
+protobuf-json-mapping = "3.7.1"
 qstring = "0.7"
 rand = "0.8"
 rayon = "1.10.0"
